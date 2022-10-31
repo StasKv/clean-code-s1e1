@@ -10,7 +10,7 @@
 
 var taskInput=document.getElementById("new-task");//Add a new task.
 var addButton=document.getElementsByTagName("button")[0];//first button
-var incompleteTaskHolder=document.getElementById("incompleteTasks");//ul of #incompleteTasks
+var incompleteTaskHolder=document.getElementById("incompleted-tasks");//ul of #incompleteTasks
 var completedTasksHolder=document.getElementById("completed-tasks");//completed-tasks
 
 
@@ -33,18 +33,22 @@ var createNewTaskElement=function(taskString){
     var deleteButtonImg=document.createElement("img");//delete button image
 
     label.innerText=taskString;
-    label.className='task';
+    label.className='label-task task'; // add
 
+    listItem.className='tasks__item'; // add
     //Each elements, needs appending
     checkBox.type="checkbox";
+    checkBox.className="input-checkbox";
     editInput.type="text";
-    editInput.className="task";
+    editInput.className="input input-text task task-input"; // add
 
     editButton.innerText="Edit"; //innerText encodes special characters, HTML does not.
-    editButton.className="edit";
+    editButton.className="button edit"; // add button
 
-    deleteButton.className="delete";
+
+    deleteButton.className="button delete"; // add button
     deleteButtonImg.src='./remove.svg';
+    deleteButtonImg.className="button__img";
     deleteButton.appendChild(deleteButtonImg);
 
 
@@ -83,23 +87,28 @@ var editTask=function(){
     var listItem=this.parentNode;
 
     var editInput=listItem.querySelector('input[type=text]');
+    console.log(editInput)
     var label=listItem.querySelector("label");
     var editBtn=listItem.querySelector(".edit");
-    var containsClass=listItem.classList.contains("editMode");
+    var containsClass=listItem.classList.contains("edited-item");
     //If class of the parent is .editmode
     if(containsClass){
 
         //switch to .editmode
         //label becomes the inputs value.
+        editInput.classList.remove('edited-input');
+        label.classList.remove('edited-label');
         label.innerText=editInput.value;
         editBtn.innerText="Edit";
     }else{
+        editInput.classList.add('edited-input');
+        label.classList.add('edited-label');
         editInput.value=label.innerText;
         editBtn.innerText="Save";
     }
 
     //toggle .editmode on the parent.
-    listItem.classList.toggle("editMode");
+    listItem.classList.toggle("edited-item");
 };
 
 
@@ -123,7 +132,28 @@ var taskCompleted=function(){
     var listItem=this.parentNode;
     completedTasksHolder.appendChild(listItem);
     bindTaskEvents(listItem, taskIncomplete);
-
+    console.log(listItem.childNodes[1].attributes)
+    console.log(listItem.childNodes[1])
+    if (listItem.childNodes[1].attributes[0].value == 'input input-checkbox') {
+        if (listItem.childNodes[3].classList.contains("edited-label")) {
+            listItem.childNodes[3].className='label-task task complited-label edited-label';
+            listItem.childNodes[5].classList.add('edited-input')
+        } else {
+            listItem.childNodes[3].className='label-task task complited-label';
+            listItem.childNodes[5].classList.remove('edited-input')
+        }
+        
+    } else {
+        console.log('tut')
+        if (listItem.childNodes[1].classList.contains("edited-label")) {
+            listItem.childNodes[1].className='label-task task complited-label edited-label';
+            listItem.childNodes[2].classList.add('edited-input')
+        } else {
+            listItem.childNodes[1].className='label-task task complited-label';
+            listItem.childNodes[2].classList.remove('edited-input')
+        }
+    
+    }
 }
 
 
@@ -135,8 +165,28 @@ var taskIncomplete=function(){
     var listItem=this.parentNode;
     incompleteTaskHolder.appendChild(listItem);
     bindTaskEvents(listItem,taskCompleted);
+    if (listItem.childNodes[1].attributes[0].value == 'input input-checkbox') {
+    console.log(listItem.childNodes[3].classList.contains("edited-label"))
+        if (listItem.childNodes[3].classList.contains("edited-label")) {
+            console.log('edited-item')
+            listItem.childNodes[3].className='label-task task edited-label';
+            listItem.childNodes[5].classList.add('edited-input')
+        } else {
+            listItem.childNodes[3].className='label-task task';
+            listItem.childNodes[5].classList.remove('edited-input')
+        }
+    } else {
+        
+        console.log('yes')
+        if (listItem.childNodes[1].classList.contains("edited-label")) {
+            listItem.childNodes[1].className='label-task task edited-label';
+            listItem.childNodes[2].classList.add('edited-input')
+        } else {
+            listItem.childNodes[1].className='label-task task';
+            listItem.childNodes[2].classList.remove('edited-input')
+        }
+    }
 }
-
 
 
 var ajaxRequest=function(){
